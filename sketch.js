@@ -41,22 +41,24 @@ const sketch = ({ context }) => {
   const texture = loader.load("earth.jpg");
   const moonTexture = loader.load("moon.jpg");
 
+  const moonMaterial = new THREE.MeshBasicMaterial({
+    map: moonTexture,
+  });
+
   // Setup a material
   const material = new THREE.MeshBasicMaterial({
-    // color: "blue",
-    // wireframe: true,
-    // flatShading: true,
     map: texture,
   });
+
+  const moonMesh = new THREE.Mesh(geometry, moonMaterial);
+  moonMesh.position.set(1.5, 1, 0);
+  moonMesh.scale.setScalar(0.25);
+
+  scene.add(moonMesh);
 
   // Setup a mesh with geometry + material
   const mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
-
-  const moonMesh = new THREE.Mesh(geometry, material);
-  moonMesh.position.set(10, 6, 0);
-  moonMesh.scale.setScalar(2);
-  scene.add(moonMesh);
 
   // draw each frame
   return {
@@ -69,6 +71,8 @@ const sketch = ({ context }) => {
     },
     // Update & render your scene here
     render({ time }) {
+      // mesh.rotation.y = time * 0.25;
+      moonMesh.rotation.y = time * 0.35;
       controls.update();
       renderer.render(scene, camera);
     },
