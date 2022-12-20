@@ -10,21 +10,21 @@ const settings = {
   // Make the loop animated
   animate: true,
   // Get a WebGL canvas rather than 2D
-  context: "webgl"
+  context: "webgl",
 };
 
 const sketch = ({ context }) => {
   // Create a renderer
   const renderer = new THREE.WebGLRenderer({
-    canvas: context.canvas
+    canvas: context.canvas,
   });
 
   // WebGL background color
   renderer.setClearColor("#000", 1);
 
   // Setup a camera
-  const camera = new THREE.PerspectiveCamera(50, 1, 0.01, 100);
-  camera.position.set(0, 0, -4);
+  const camera = new THREE.PerspectiveCamera(50, 1, 0.01, 500);
+  camera.position.set(2, 2, -4);
   camera.lookAt(new THREE.Vector3());
 
   // Setup camera controller
@@ -37,9 +37,10 @@ const sketch = ({ context }) => {
   const geometry = new THREE.SphereGeometry(1, 32, 16);
 
   // Setup a material
-  const material = new THREE.MeshBasicMaterial({
-    color: "red",
-    wireframe: true
+  const material = new THREE.MeshNormalMaterial({
+    // color: "blue",
+    // wireframe: true,
+    flatShading: true,
   });
 
   // Setup a mesh with geometry + material
@@ -64,7 +65,7 @@ const sketch = ({ context }) => {
     unload() {
       controls.dispose();
       renderer.dispose();
-    }
+    },
   };
 };
 
