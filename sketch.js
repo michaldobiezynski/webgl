@@ -36,16 +36,27 @@ const sketch = ({ context }) => {
   // Setup a geometry
   const geometry = new THREE.SphereGeometry(1, 32, 16);
 
+  const loader = new THREE.TextureLoader();
+
+  const texture = loader.load("earth.jpg");
+  const moonTexture = loader.load("moon.jpg");
+
   // Setup a material
-  const material = new THREE.MeshNormalMaterial({
+  const material = new THREE.MeshBasicMaterial({
     // color: "blue",
     // wireframe: true,
-    flatShading: true,
+    // flatShading: true,
+    map: texture,
   });
 
   // Setup a mesh with geometry + material
   const mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
+
+  const moonMesh = new THREE.Mesh(geometry, material);
+  moonMesh.position.set(10, 6, 0);
+  moonMesh.scale.setScalar(2);
+  scene.add(moonMesh);
 
   // draw each frame
   return {
