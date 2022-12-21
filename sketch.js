@@ -7,7 +7,7 @@ require("three/examples/js/controls/OrbitControls");
 const canvasSketch = require("canvas-sketch");
 
 const settings = {
-  // Make the loop animated
+  // Make the loop animated unless ?static is passed to URL
   animate: true,
   // Get a WebGL canvas rather than 2D
   context: "webgl",
@@ -16,79 +16,57 @@ const settings = {
 const sketch = ({ context }) => {
   // Create a renderer
   const renderer = new THREE.WebGLRenderer({
-    canvas: context.canvas,
+    context,
   });
 
   // WebGL background color
-  renderer.setClearColor("#000", 1);
+  renderer.setClearColor("#fff", 1);
 
   // Setup a camera
-  const camera = new THREE.PerspectiveCamera(70, 1, 0.01, 500);
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 100);
   camera.position.set(2, 2, -4);
   camera.lookAt(new THREE.Vector3());
 
   // Setup camera controller
   const controls = new THREE.OrbitControls(camera, context.canvas);
+  controls.enableZoom = false;
 
   // Setup your scene
   const scene = new THREE.Scene();
 
-  // Setup a geometry
-  const geometry = new THREE.SphereGeometry(1, 32, 16);
+  // A grid
+  const gridScale = 10;
+  scene.add(
+    new THREE.GridHelper(gridScale, 10, "hsl(0, 0%, 50%)", "hsl(0, 0%, 70%)")
+  );
+  const geometry = new THREE.BufferGeometry();
+  // create a simple square shape. We duplicate the top left and bottom right
+  // vertices because each vertex needs to appear once per triangle.
+  const vertices = new Float32Array([
+    -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0,
 
-  const loader = new THREE.TextureLoader();
+    1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0,
+  ]);
 
-  const texture = loader.load("earth.jpg");
-  const moonTexture = loader.load("moon.jpg");
-
-  const moonGroup = new THREE.Group();
-
-  const moonMaterial = new THREE.MeshStandardMaterial({
-    roughness: 1,
-    metalness: 0,
-    map: moonTexture,
-  });
-
-  // Setup a material
-  const material = new THREE.MeshStandardMaterial({
-    roughness: 1,
-    metalness: 0,
-    map: texture,
-  });
-
-  const moonMesh = new THREE.Mesh(geometry, moonMaterial);
-  moonMesh.position.set(1.5, 1, 0);
-  moonMesh.scale.setScalar(0.25);
-
-  moonGroup.add(moonMesh);
-
-  // Setup a mesh with geometry + material
+  // itemSize = 3 because there are 3 values (components) per vertex
+  geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+  const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
   const mesh = new THREE.Mesh(geometry, material);
-  // mesh.scale.setScalar(3958.8);
+
+  // Add it to the scene
   scene.add(mesh);
-  scene.add(moonGroup);
-
-  const light = new THREE.PointLight("white", 2);
-  light.position.set(3, 3, 0);
-  moonGroup.add(light);
-
-  // scene.add(new THREE.GridHelper(5, 50));
-  // scene.add(new THREE.PointLightHelper(light, 1));
 
   // draw each frame
   return {
     // Handle resize events here
     resize({ pixelRatio, viewportWidth, viewportHeight }) {
       renderer.setPixelRatio(pixelRatio);
-      renderer.setSize(viewportWidth, viewportHeight, false);
+      renderer.setSize(viewportWidth, viewportHeight);
       camera.aspect = viewportWidth / viewportHeight;
       camera.updateProjectionMatrix();
     },
     // Update & render your scene here
-    render({ time }) {
-      mesh.rotation.y = time * 0.25;
-      moonMesh.rotation.y = time * 0.75;
-      moonGroup.rotation.y = time * 0.35;
+    render() {
       controls.update();
       renderer.render(scene, camera);
     },
