@@ -71,6 +71,9 @@ const sketch = ({ context }) => {
   light.position.set(3, 3, 3);
   scene.add(light);
 
+  scene.add(new THREE.GridHelper(5, 50));
+  // scene.add(new THREE.PointLightHelper(light, 1));
+
   // draw each frame
   return {
     // Handle resize events here
