@@ -64,14 +64,15 @@ const sketch = ({ context }) => {
 
   // Setup a mesh with geometry + material
   const mesh = new THREE.Mesh(geometry, material);
+  // mesh.scale.setScalar(3958.8);
   scene.add(mesh);
   scene.add(moonGroup);
 
   const light = new THREE.PointLight("white", 2);
-  light.position.set(3, 3, 3);
-  scene.add(light);
+  light.position.set(3, 3, 0);
+  moonGroup.add(light);
 
-  scene.add(new THREE.GridHelper(5, 50));
+  // scene.add(new THREE.GridHelper(5, 50));
   // scene.add(new THREE.PointLightHelper(light, 1));
 
   // draw each frame
